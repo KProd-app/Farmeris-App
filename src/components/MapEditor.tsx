@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from 'react';
-import { MapContainer, TileLayer, FeatureGroup, Polygon } from 'react-leaflet';
+import { MapContainer, TileLayer, WMSTileLayer, FeatureGroup, Polygon } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import L from 'leaflet';
@@ -16,6 +16,7 @@ interface MapEditorProps {
 export default function MapEditor({ onPolygonCreated, initialGeoData }: MapEditorProps) {
   const [map, setMap] = useState<L.Map | null>(null);
   const featureGroupRef = useRef<L.FeatureGroup>(null);
+  const [showKadastras, setShowKadastras] = useState(false);
 
   // Default center point: Lietuva, Kaunas roughly
   const center: [number, number] = [55.2530, 23.9736];
@@ -165,10 +166,35 @@ export default function MapEditor({ onPolygonCreated, initialGeoData }: MapEdito
           maxZoom={19}
         />
         
+        {showKadastras && (
+          <WMSTileLayer
+            url="https://www.geoportal.lt/mapproxy/rc_kadastro_zemelapis/MapServer/WMSServer"
+            layers="15,21,27,33"
+            format="image/png"
+            transparent={true}
+            version="1.3.0"
+            opacity={0.8}
+          />
+        )}
+        
         {/* Layer for storing our drawn lines */}
         <FeatureGroup ref={featureGroupRef}>
         </FeatureGroup>
       </MapContainer>
+
+      {/* Kadastro UI Toggle */}
+      <div className="absolute top-4 right-[60px] z-[400] bg-surface rounded-[16px] shadow-sm ring-1 ring-surface-container-highest p-3 flex items-center gap-3">
+         <input 
+            type="checkbox" 
+            id="kadastrasToggle"
+            checked={showKadastras}
+            onChange={(e) => setShowKadastras(e.target.checked)} 
+            className="w-5 h-5 rounded border-surface-container-highest text-primary focus:ring-primary cursor-pointer transition-all"
+         />
+         <label htmlFor="kadastrasToggle" className="text-sm font-semibold text-ink cursor-pointer select-none font-sans uppercase tracking-widest text-[0.6875rem]">
+            Kadastro Ribos
+         </label>
+      </div>
 
       {/* Crosshair Overlay */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-50 z-[400]">
