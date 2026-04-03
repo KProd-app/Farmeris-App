@@ -166,6 +166,12 @@ export default function MapEditor({ onPolygonCreated, initialGeoData }: MapEdito
           maxZoom={19}
         />
         
+        {/* Miestų ir gatvių pavadinimai */}
+        <TileLayer
+          url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
+          maxZoom={19}
+        />
+        
         {showKadastras && (
           <WMSTileLayer
             url="/api/cadastre"
