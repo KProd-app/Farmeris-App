@@ -27,6 +27,18 @@ const TasksIcon = () => (
   </svg>
 );
 
+const InventoryIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+  </svg>
+);
+
+const FinanceIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
 const WorkersIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -50,10 +62,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Solo Farmer Links added here
   const farmerLinks = [
     { name: "Apžvalga", href: "/dashboard", icon: HomeIcon },
     { name: "Mano Laukai", href: "/dashboard/laukai", icon: FieldsIcon },
-    { name: "Darbai", href: "/dashboard/darbai", icon: TasksIcon },
+    { name: "Kalendorius", href: "/dashboard/darbai", icon: TasksIcon },
+    { name: "Sandėlys", href: "/dashboard/sandelis", icon: InventoryIcon },
+    { name: "Finansai", href: "/dashboard/finansai", icon: FinanceIcon },
     { name: "Darbuotojai", href: "/dashboard/workers", icon: WorkersIcon },
   ];
 
@@ -74,29 +89,34 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <ProtectedRoute>
-      <div className="flex h-screen bg-gray-50 overflow-hidden font-sans">
-        {/* Mobiliojo ekrano užtemdymas */}
+      <div className="flex h-screen bg-surface overflow-hidden font-sans">
+        {/* Mobiliojo ekrano užtemdymas - Glassmorphism fallback */}
         {mobileMenuOpen && (
           <div 
-            className="fixed inset-0 z-20 bg-gray-900 bg-opacity-50 transition-opacity lg:hidden"
+            className="fixed inset-0 z-20 bg-surface-container-highest/70 backdrop-blur-md transition-opacity lg:hidden"
             onClick={() => setMobileMenuOpen(false)}
           />
         )}
 
-        {/* Šoninis Meniu (Sidebar) */}
-        <div className={`fixed inset-y-0 left-0 z-30 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-auto ${customMobileSlide(mobileMenuOpen)} flex flex-col`}>
+        {/* Šoninis Meniu (Sidebar) - The Digital Agronomist aesthetic */}
+        <div className={`fixed inset-y-0 left-0 z-30 w-72 bg-surface-container-lowest shadow-[4px_0_40px_rgba(26,28,25,0.03)] transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-auto flex flex-col ${customMobileSlide(mobileMenuOpen)}`}>
+          
           {/* Logo / Pavadinimas */}
-          <div className="flex items-center justify-center h-16 border-b border-gray-200 bg-emerald-50 px-4">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-emerald-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-            </svg>
-            <span className="text-xl font-bold tracking-wider text-emerald-800">
-              Farmeris
-            </span>
+          <div className="flex items-center justify-center py-10 px-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-primary/10 p-3 rounded-[16px]">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                </svg>
+              </div>
+              <span className="text-2xl font-bold tracking-tight text-ink">
+                Farmeris
+              </span>
+            </div>
           </div>
 
-          {/* Navigacijos Nuorodos */}
-          <nav className="flex-1 px-4 py-6 text-sm text-gray-700 font-medium space-y-1 overflow-y-auto">
+          {/* Navigacijos Nuorodos (Erdvios, apvalios formos) */}
+          <nav className="flex-1 px-6 py-2 text-[0.9375rem] text-ink font-medium space-y-2 overflow-y-auto">
             {links.map((link) => {
               const isActive = pathname === link.href;
               return (
@@ -104,13 +124,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   key={link.name} 
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group ${
+                  className={`flex items-center gap-4 px-5 py-3.5 rounded-[20px] transition-all group ${
                     isActive 
-                      ? "bg-emerald-50 text-emerald-700" 
-                      : "hover:bg-gray-100 text-gray-600 hover:text-gray-900"
+                      ? "bg-surface-container-highest shadow-[0_4px_16px_rgba(26,28,25,0.04)] text-ink" 
+                      : "text-ink/60 hover:text-ink hover:bg-surface"
                   }`}
                 >
-                  <div className={`${isActive ? "text-emerald-600" : "text-gray-400 group-hover:text-gray-500"}`}>
+                  <div className={`${isActive ? "text-primary" : "text-ink/40 group-hover:text-primary/70"}`}>
                     <link.icon />
                   </div>
                   {link.name}
@@ -120,19 +140,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </nav>
 
           {/* Vartotojo Profilis ir Atsijungimas */}
-          <div className="p-4 border-t border-gray-200 bg-gray-50">
-            <div className="flex items-start gap-3 flex-col w-full">
+          <div className="p-6 mt-auto">
+            <div className="bg-surface p-4 rounded-[24px] flex flex-col gap-4 shadow-[0_4px_16px_rgba(26,28,25,0.02)]">
                <div className="flex flex-col">
-                  <span className="text-sm font-semibold text-gray-900 truncate max-w-[200px]">
+                  <span className="text-sm font-semibold text-ink truncate font-mono">
                     {user?.email}
                   </span>
-                  <span className="text-xs font-medium text-emerald-600 capitalize bg-emerald-100/50 px-2 py-0.5 rounded-full self-start mt-1 border border-emerald-200">
-                    {userData?.role === "farmer" ? "Ūkininkas" : "Darbuotojas"}
+                  <span className="text-[0.6875rem] font-bold tracking-widest uppercase text-primary bg-primary/10 px-2.5 py-1.5 rounded-full self-start mt-2 font-sans">
+                    {userData?.role === "farmer" ? "Ūkininkas" : "Pagalbininkas"}
                   </span>
                </div>
                <button 
                   onClick={handleLogout}
-                  className="w-full flex items-center justify-center gap-2 mt-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 border border-transparent rounded-md transition-colors"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm text-secondary hover:bg-secondary/10 rounded-[16px] transition-colors font-medium border border-transparent"
                >
                  <LogoutIcon />
                  Atsijungti
@@ -142,21 +162,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
 
         {/* Pagrindinis turinys */}
-        <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 flex flex-col overflow-hidden bg-surface relative">
+          
           {/* Mobili antraštė */}
-          <header className="flex items-center justify-between h-16 px-4 border-b border-gray-200 bg-white lg:hidden">
+          <header className="flex items-center justify-between h-20 px-6 bg-surface-container-highest/50 backdrop-blur-md lg:hidden absolute top-0 left-0 right-0 z-10">
             <button 
               onClick={() => setMobileMenuOpen(true)}
-              className="text-gray-500 focus:outline-none focus:text-gray-700 p-2 -ml-2"
+              className="text-ink/60 focus:outline-none p-2 -ml-2 bg-white rounded-full shadow-sm"
             >
               <MenuIcon />
             </button>
-            <span className="text-lg font-bold text-emerald-800">Farmeris</span>
-            <div className="w-8"></div> {/* Tuščia vieta simetrijai */}
+            <span className="text-lg font-bold text-ink tracking-tight">Farmeris</span>
+            <div className="w-10"></div>
           </header>
 
-          <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100/50 p-4 md:p-6 lg:p-8">
-            <div className="w-full max-w-7xl mx-auto">
+          <main className="flex-1 overflow-x-hidden overflow-y-auto pt-24 lg:pt-8 p-4 md:p-8 lg:p-12">
+            <div className="w-full max-w-6xl mx-auto">
               {children}
             </div>
           </main>
