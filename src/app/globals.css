@@ -16,5 +16,8 @@
   --font-sans: var(--font-inter);
   --font-mono: var(--font-jetbrains-mono);
 }
+:root {
+  color-scheme: light;
+}
 
 /* Tailwind V4 root is simple. Base background is handled in layout.tsx. */
