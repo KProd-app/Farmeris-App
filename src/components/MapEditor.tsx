@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from 'react';
-import { MapContainer, TileLayer, WMSTileLayer, FeatureGroup, Polygon } from 'react-leaflet';
+import { MapContainer, TileLayer, FeatureGroup, Polygon } from 'react-leaflet';
+// @ts-ignore
+import * as esri from 'esri-leaflet';
 import 'leaflet/dist/leaflet.css';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import L from 'leaflet';
@@ -109,6 +111,23 @@ export default function MapEditor({ onPolygonCreated, initialGeoData }: MapEdito
     }
   }, [map, onPolygonCreated]);
 
+  // Handle Geoportal ArcGIS Dynamic Map Layer (since WMS endpoint blocks CORS)
+  useEffect(() => {
+    if (!map || !showKadastras) return;
+
+    const dynamicLayer = esri.dynamicMapLayer({
+      url: "https://www.geoportal.lt/mapproxy/rc_kadastro_zemelapis/MapServer",
+      opacity: 0.8,
+      layers: [15, 21, 27, 33]
+    });
+
+    dynamicLayer.addTo(map);
+
+    return () => {
+      map.removeLayer(dynamicLayer);
+    };
+  }, [map, showKadastras]);
+
   // Jei turim initialGeoData (redaguojant) nupiesiame ji.
   useEffect(() => {
     if (!map || !initialGeoData || !featureGroupRef.current) return;
@@ -165,17 +184,6 @@ export default function MapEditor({ onPolygonCreated, initialGeoData }: MapEdito
           url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
           maxZoom={19}
         />
-        
-        {showKadastras && (
-          <WMSTileLayer
-            url="https://www.geoportal.lt/mapproxy/rc_kadastro_zemelapis/MapServer/WMSServer"
-            layers="15,21,27,33"
-            format="image/png"
-            transparent={true}
-            version="1.3.0"
-            opacity={0.8}
-          />
-        )}
         
         {/* Layer for storing our drawn lines */}
         <FeatureGroup ref={featureGroupRef}>
