@@ -12,9 +12,11 @@ export async function GET(request: Request) {
     return new NextResponse('Missing bbox parameter', { status: 400 });
   }
 
+  // Handle dynamic layers request
+  const requestedLayers = searchParams.get('layers') || '15,21,27,33';
+
   // Geoportal MapServer export endpoint parameters
-  // layers=show:15,21,27,33 targets the Cadastral parcels (Sklypai) at different scale levels
-  const targetUrl = `https://www.geoportal.lt/mapproxy/rc_kadastro_zemelapis/MapServer/export?bbox=${bbox}&bboxSR=3857&layers=show:15,21,27,33&size=${width},${height}&imageSR=3857&format=png&transparent=true&f=image`;
+  const targetUrl = `https://www.geoportal.lt/mapproxy/rc_kadastro_zemelapis/MapServer/export?bbox=${bbox}&bboxSR=3857&layers=show:${requestedLayers}&size=${width},${height}&imageSR=3857&format=png&transparent=true&f=image`;
 
   try {
     const response = await fetch(targetUrl, {

@@ -16,7 +16,12 @@ interface MapEditorProps {
 export default function MapEditor({ onPolygonCreated, initialGeoData }: MapEditorProps) {
   const [map, setMap] = useState<L.Map | null>(null);
   const featureGroupRef = useRef<L.FeatureGroup>(null);
-  const [showKadastras, setShowKadastras] = useState(false);
+  
+  // GIS Layer States
+  const [showSklypai, setShowSklypai] = useState(false);
+  const [showInzineriniai, setShowInzineriniai] = useState(false);
+  const [showKadastroBlokai, setShowKadastroBlokai] = useState(false);
+  const [showKadastroVietoves, setShowKadastroVietoves] = useState(false);
 
   // Default center point: Lietuva, Kaunas roughly
   const center: [number, number] = [55.2530, 23.9736];
@@ -151,6 +156,12 @@ export default function MapEditor({ onPolygonCreated, initialGeoData }: MapEdito
     onPolygonCreated(geojson, roundedHektarai);
   };
 
+  const activeLayers = [];
+  if (showSklypai) activeLayers.push("15,21,27,33");
+  if (showKadastroBlokai) activeLayers.push("13,19,25,31");
+  if (showKadastroVietoves) activeLayers.push("14,20,26,32");
+  if (showInzineriniai) activeLayers.push("16,17,22,23,28,29,34,35");
+  const activeLayersStr = activeLayers.join(",");
 
   return (
     <div style={{ height: '100%', width: '100%', borderRadius: '32px', overflow: 'hidden', position: 'relative' }}>
@@ -172,9 +183,11 @@ export default function MapEditor({ onPolygonCreated, initialGeoData }: MapEdito
           maxZoom={19}
         />
         
-        {showKadastras && (
+        {activeLayersStr.length > 0 && (
           <WMSTileLayer
+            key={activeLayersStr}
             url="/api/cadastre"
+            layers={activeLayersStr}
             format="image/png"
             transparent={true}
             version="1.3.0"
@@ -187,18 +200,29 @@ export default function MapEditor({ onPolygonCreated, initialGeoData }: MapEdito
         </FeatureGroup>
       </MapContainer>
 
-      {/* Kadastro UI Toggle */}
-      <div className="absolute top-4 right-[60px] z-[400] bg-surface rounded-[16px] shadow-sm ring-1 ring-surface-container-highest p-3 flex items-center gap-3">
-         <input 
-            type="checkbox" 
-            id="kadastrasToggle"
-            checked={showKadastras}
-            onChange={(e) => setShowKadastras(e.target.checked)} 
-            className="w-5 h-5 rounded border-surface-container-highest text-primary focus:ring-primary cursor-pointer transition-all"
-         />
-         <label htmlFor="kadastrasToggle" className="text-sm font-semibold text-ink cursor-pointer select-none font-sans uppercase tracking-widest text-[0.6875rem]">
-            Kadastro Ribos
-         </label>
+      {/* Kadastro UI Toggle Panel */}
+      <div className="absolute top-4 right-[60px] z-[400] bg-surface rounded-[16px] shadow-sm ring-1 ring-surface-container-highest p-3 flex flex-col gap-3">
+         
+         <div className="flex items-center gap-3">
+            <input type="checkbox" id="toggleSklypai" checked={showSklypai} onChange={(e) => setShowSklypai(e.target.checked)} className="w-[18px] h-[18px] rounded border-surface-container-highest text-primary cursor-pointer transition-all" />
+            <label htmlFor="toggleSklypai" className="text-xs font-semibold text-ink cursor-pointer select-none">Sklypų Ribos</label>
+         </div>
+
+         <div className="flex items-center gap-3">
+            <input type="checkbox" id="toggleInz" checked={showInzineriniai} onChange={(e) => setShowInzineriniai(e.target.checked)} className="w-[18px] h-[18px] rounded border-surface-container-highest text-primary cursor-pointer transition-all" />
+            <label htmlFor="toggleInz" className="text-xs font-semibold text-ink cursor-pointer select-none">Inž. Tinklai (Drenažas)</label>
+         </div>
+
+         <div className="flex items-center gap-3">
+            <input type="checkbox" id="toggleBlokai" checked={showKadastroBlokai} onChange={(e) => setShowKadastroBlokai(e.target.checked)} className="w-[18px] h-[18px] rounded border-surface-container-highest text-primary cursor-pointer transition-all" />
+            <label htmlFor="toggleBlokai" className="text-xs font-semibold text-ink cursor-pointer select-none">Kadastro Blokai</label>
+         </div>
+
+         <div className="flex items-center gap-3">
+            <input type="checkbox" id="toggleVietoves" checked={showKadastroVietoves} onChange={(e) => setShowKadastroVietoves(e.target.checked)} className="w-[18px] h-[18px] rounded border-surface-container-highest text-primary cursor-pointer transition-all" />
+            <label htmlFor="toggleVietoves" className="text-xs font-semibold text-ink cursor-pointer select-none">Kadastro Vietovės</label>
+         </div>
+
       </div>
 
       {/* Crosshair Overlay */}
