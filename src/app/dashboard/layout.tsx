@@ -69,7 +69,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { name: "Kalendorius", href: "/dashboard/darbai", icon: TasksIcon },
     { name: "Sandėlys", href: "/dashboard/sandelis", icon: InventoryIcon },
     { name: "Finansai", href: "/dashboard/finansai", icon: FinanceIcon },
-    { name: "Darbuotojai", href: "/dashboard/workers", icon: WorkersIcon },
   ];
 
   const workerLinks = [
