@@ -218,18 +218,23 @@ export default function LaukaiPage() {
         <div className="relative z-50">
           <div className="fixed inset-0 bg-surface-container-highest/90 backdrop-blur-[32px] transition-opacity" onClick={() => setIsModalOpen(false)}></div>
           
-          <div className="fixed inset-0 z-10 flex items-center justify-center p-4">
-              <div className="relative transform overflow-hidden rounded-[40px] bg-surface text-left shadow-[0_48px_100px_rgba(26,28,25,0.2)] transition-all flex flex-col lg:flex-row w-full max-w-[1400px] h-full max-h-[90vh]">
+          <div className="fixed inset-0 z-10 flex items-center justify-center p-0 lg:p-4">
+              <div className="relative transform overflow-hidden bg-surface text-left shadow-[0_48px_100px_rgba(26,28,25,0.2)] transition-all flex flex-col lg:flex-row w-full lg:max-w-[1400px] h-[100dvh] lg:h-[90vh] lg:rounded-[40px]">
                 
                 {/* 60% Ploto - Palydovinis Žemėlapis */}
-                <div className="w-full lg:w-2/3 h-[50vh] lg:h-auto p-4 md:p-6 lg:p-8">
-                   <div className="h-full w-full rounded-[32px] overflow-hidden bg-surface-container-lowest ring-1 ring-surface-container-highest/20 shadow-inner">
+                <div className="flex-1 lg:w-2/3 p-0 lg:p-8 flex flex-col min-h-[50vh]">
+                   {/* Pridedame nedidelį mygtuką "Uždaryti" mobiliajai versijai virš žemėlapio */}
+                   <button onClick={() => setIsModalOpen(false)} className="lg:hidden absolute top-4 left-4 z-[400] bg-surface rounded-full p-2 shadow-sm ring-1 ring-surface-container-highest">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 text-ink"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                   </button>
+                   
+                   <div className="flex-1 w-full lg:rounded-[32px] overflow-hidden bg-surface-container-lowest ring-1 ring-surface-container-highest/20 shadow-inner">
                       <MapEditor onPolygonCreated={handlePolygonChange} />
                    </div>
                 </div>
 
                 {/* 40% Ploto - Formos Duomenys */}
-                <div className="w-full lg:w-1/3 bg-surface-container-lowest flex flex-col order-first lg:order-last border-b lg:border-b-0 border-l-0 lg:border-l border-surface-container-highest/50">
+                <div className="w-full lg:w-1/3 bg-surface-container-lowest flex flex-col order-last border-t lg:border-t-0 lg:border-l border-surface-container-highest/50 h-[45vh] lg:h-auto z-20 shadow-[0_-20px_40px_rgba(0,0,0,0.1)] lg:shadow-none">
                    <form onSubmit={handleAddField} className="flex flex-col h-full">
                       <div className="flex-1 p-8 overflow-y-auto">
                         <h3 className="text-[2.5rem] leading-none tracking-tight font-bold text-ink mb-2">Naujas Laukas</h3>

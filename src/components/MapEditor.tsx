@@ -22,6 +22,7 @@ export default function MapEditor({ onPolygonCreated, initialGeoData }: MapEdito
   const [showInzineriniai, setShowInzineriniai] = useState(false);
   const [showKadastroBlokai, setShowKadastroBlokai] = useState(false);
   const [showKadastroVietoves, setShowKadastroVietoves] = useState(false);
+  const [layersExpanded, setLayersExpanded] = useState(false);
 
   // Default center point: Lietuva, Kaunas roughly
   const center: [number, number] = [55.2530, 23.9736];
@@ -200,29 +201,42 @@ export default function MapEditor({ onPolygonCreated, initialGeoData }: MapEdito
         </FeatureGroup>
       </MapContainer>
 
-      {/* Kadastro UI Toggle Panel */}
-      <div className="absolute top-4 right-[60px] z-[400] bg-surface rounded-[16px] shadow-sm ring-1 ring-surface-container-highest p-3 flex flex-col gap-3">
+      {/* Kadastro UI Toggle Panel - Collapsible */}
+      <div className="absolute top-4 right-4 lg:right-[60px] z-[400] bg-surface rounded-[20px] shadow-sm ring-1 ring-surface-container-highest flex flex-col overflow-hidden transition-all duration-300">
          
-         <div className="flex items-center gap-3">
-            <input type="checkbox" id="toggleSklypai" checked={showSklypai} onChange={(e) => setShowSklypai(e.target.checked)} className="w-[18px] h-[18px] rounded border-surface-container-highest text-primary cursor-pointer transition-all" />
-            <label htmlFor="toggleSklypai" className="text-xs font-semibold text-ink cursor-pointer select-none">Sklypų Ribos</label>
+         {/* Pagrindinis mygtukas (Sklypai) ir išskleidimo rodyklė */}
+         <div 
+            className="flex items-center justify-between p-3 px-4 gap-4 cursor-pointer hover:bg-surface-container-lowest transition-colors"
+            onClick={() => setLayersExpanded(!layersExpanded)}
+         >
+            <div className="flex items-center gap-3" onClick={(e) => e.stopPropagation()}>
+               <input type="checkbox" id="toggleSklypai" checked={showSklypai} onChange={(e) => setShowSklypai(e.target.checked)} className="w-[18px] h-[18px] rounded border-surface-container-highest text-primary cursor-pointer transition-all" />
+               <label htmlFor="toggleSklypai" className="text-xs font-semibold text-ink cursor-pointer select-none">Sklypų Ribos</label>
+            </div>
+            <button className="text-ink/40 hover:text-ink transition-colors ml-2" onClick={(e) => { e.stopPropagation(); setLayersExpanded(!layersExpanded); }}>
+               <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 transform transition-transform ${layersExpanded ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+            </button>
          </div>
 
-         <div className="flex items-center gap-3">
-            <input type="checkbox" id="toggleInz" checked={showInzineriniai} onChange={(e) => setShowInzineriniai(e.target.checked)} className="w-[18px] h-[18px] rounded border-surface-container-highest text-primary cursor-pointer transition-all" />
-            <label htmlFor="toggleInz" className="text-xs font-semibold text-ink cursor-pointer select-none">Inž. Tinklai (Drenažas)</label>
-         </div>
+         {/* Kiti sluoksniai */}
+         {layersExpanded && (
+            <div className="p-3 px-4 pt-3 border-t border-surface-container-highest/50 flex flex-col gap-4 bg-surface-container-lowest/50 animate-in slide-in-from-top-2 duration-200">
+                <div className="flex items-center gap-3">
+                    <input type="checkbox" id="toggleInz" checked={showInzineriniai} onChange={(e) => setShowInzineriniai(e.target.checked)} className="w-[18px] h-[18px] rounded border-surface-container-highest text-primary cursor-pointer transition-all" />
+                    <label htmlFor="toggleInz" className="text-[10px] uppercase tracking-widest font-bold text-ink cursor-pointer select-none">Tinklai (Drenažas)</label>
+                </div>
 
-         <div className="flex items-center gap-3">
-            <input type="checkbox" id="toggleBlokai" checked={showKadastroBlokai} onChange={(e) => setShowKadastroBlokai(e.target.checked)} className="w-[18px] h-[18px] rounded border-surface-container-highest text-primary cursor-pointer transition-all" />
-            <label htmlFor="toggleBlokai" className="text-xs font-semibold text-ink cursor-pointer select-none">Kadastro Blokai</label>
-         </div>
+                <div className="flex items-center gap-3">
+                    <input type="checkbox" id="toggleBlokai" checked={showKadastroBlokai} onChange={(e) => setShowKadastroBlokai(e.target.checked)} className="w-[18px] h-[18px] rounded border-surface-container-highest text-primary cursor-pointer transition-all" />
+                    <label htmlFor="toggleBlokai" className="text-[10px] uppercase tracking-widest font-bold text-ink cursor-pointer select-none">Kadastro Blokai</label>
+                </div>
 
-         <div className="flex items-center gap-3">
-            <input type="checkbox" id="toggleVietoves" checked={showKadastroVietoves} onChange={(e) => setShowKadastroVietoves(e.target.checked)} className="w-[18px] h-[18px] rounded border-surface-container-highest text-primary cursor-pointer transition-all" />
-            <label htmlFor="toggleVietoves" className="text-xs font-semibold text-ink cursor-pointer select-none">Kadastro Vietovės</label>
-         </div>
-
+                <div className="flex items-center gap-3">
+                    <input type="checkbox" id="toggleVietoves" checked={showKadastroVietoves} onChange={(e) => setShowKadastroVietoves(e.target.checked)} className="w-[18px] h-[18px] rounded border-surface-container-highest text-primary cursor-pointer transition-all" />
+                    <label htmlFor="toggleVietoves" className="text-[10px] uppercase tracking-widest font-bold text-ink cursor-pointer select-none">Kadastro Vietovės</label>
+                </div>
+            </div>
+         )}
       </div>
 
       {/* Crosshair Overlay */}
