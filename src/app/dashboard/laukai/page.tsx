@@ -62,8 +62,21 @@ export default function LaukaiPage() {
     const q = query(collection(db, "laukai"), where("ownerId", "==", user.uid));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const data: Laukas[] = [];
-      querySnapshot.forEach((doc) => {
-        data.push({ id: doc.id, ...doc.data() } as Laukas);
+      querySnapshot.forEach((docSnap) => {
+        const itemData = docSnap.data();
+        let parsedGeoData = null;
+        if (itemData.geoData) {
+           try {
+             parsedGeoData = typeof itemData.geoData === "string" ? JSON.parse(itemData.geoData) : itemData.geoData;
+           } catch(e) {
+             console.error("Failed to parse geoData", e);
+           }
+        }
+        data.push({ 
+           id: docSnap.id, 
+           ...itemData,
+           geoData: parsedGeoData
+        } as Laukas);
       });
       data.sort((a, b) => a.pavadinimas.localeCompare(b.pavadinimas));
       setLaukai(data);
@@ -94,7 +107,7 @@ export default function LaukaiPage() {
         pavadinimas: formPavadinimas,
         plotas: parseFloat(formPlotas),
         kultura: formKultura,
-        geoData: formGeoData,
+        geoData: formGeoData ? JSON.stringify(formGeoData) : null,
         createdAt: serverTimestamp()
       });
       

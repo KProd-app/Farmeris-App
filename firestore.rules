@@ -1,0 +1,33 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Vartotojo profiliai
+    match /users/{userId} {
+      // Tik vartotojas gali matyti, kurti ar keisti savo profilį
+      allow read, write, create: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Laukai
+    match /laukai/{laukasId} {
+      // Matyti, keisti ir trinti gali tik tas vartotojas, kuriam priklauso laukas
+      allow read, update, delete: if request.auth != null && resource.data.ownerId == request.auth.uid;
+      // Kurti naują lauką gali vartotojas tik su savo ownerId
+      allow create: if request.auth != null && request.resource.data.ownerId == request.auth.uid;
+    }
+
+    // Sandėlis (items)
+    match /sandelis/{itemId} {
+      // Analogiška apsauga
+      allow read, update, delete: if request.auth != null && resource.data.ownerId == request.auth.uid;
+      allow create: if request.auth != null && request.resource.data.ownerId == request.auth.uid;
+    }
+    
+    // Darbai (tasks)
+    match /darbai/{darboId} {
+      // Analogiška apsauga
+      allow read, update, delete: if request.auth != null && resource.data.ownerId == request.auth.uid;
+      allow create: if request.auth != null && request.resource.data.ownerId == request.auth.uid;
+    }
+  }
+}
