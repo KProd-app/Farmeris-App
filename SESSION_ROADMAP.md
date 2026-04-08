@@ -3,32 +3,27 @@
 Šis failas skirtas išsaugoti informaciją tarp sesijų. Atidarius šį failą naujoje sesijoje, DI asistentas iškart žinos projekto kontekstą, kas jau padaryta ir nuo ko reikia pradėti.
 
 ## 🏆 Ką jau pasiekėme (Dabartinis statusas)
-1. **GIS Sistemos Integracija:** Sėkmingai integruotas interaktyvus žemėlapis (su `react-leaflet` ir `Leaflet-Geoman`), leidžiantis braižyti laukų plotus (poligonus).
-2. **Koordinatės ir Hektarai:** Sukurta logika, kuri automatiškai apskaičiuoja nupiešto lauko plotą ir paverčia jį hektarais. Valdymas pritaikytas patogiam naudojimui mobiliuosiuose įrenginiuose (100dvh App mode).
-3. **Valstybės Kadastro Duomenys:** Sukurtas unikalus "Next.js API Proxy" tunelis (`/api/cadastre`), kuris apeina `Geoportal.lt` CORS apsaugas. Ūkininkas gali dinamiškai atvaizduoti:
-   - Sklypų ribas
-   - Kadastro blokus
-   - Kadastro vietoves
-   - Inžinerinius tinklus (kanalizaciją, elektrą, šilumos trasas)
 
-> **Dabartinė problema:** Duomenys šiuo metu išlaikomi tik UI lauko būsenoje. Perkovus puslapį, laukai dingsta.
+1. **Vartotojų Profilių ir Bazių Architektūra:** Įdiegta Firebase Firestore integracija su multi-tenant apsauga (Firestore rules), leidžianti atskirti vartotojus (`userId` lygmenyje). Parduotas "Company", "Farmer" ir "Worker" rolinio modeliavimo funkcionalumas.
+2. **Autentifikacijos Tolina:** Visiškai perrašytas Prisijungimo ir Registracijos dizainas apjungtas į vieną modulį. Padarytas modernus prioritizavimas Prisijungimui ir užkoduotas tiesioginis (Vardo ir Pavardės) formos talpinimas į DB (`users` kolekciją) išsaugant naujus naudotojus.
+3. **Pagrindinio „Dashboard“ Dizaino Atnaujinimas (UI Transformation):**
+   - Sukurtas itin modernus „Digital Agronomist“ ir „Glassmorphism“ dizaino stiliaus Sidebar ir Top Header (`layout.tsx`).
+   - Apžvalgos puslapis (`page.tsx`) paverstas į interaktyvų apžvalginį „Bento-Grid“ stiliaus „Dashboard“, talpinantį Pasėlių būsenų progresą, atnaujintą orų logiką ir aktyvių užduočių stebėjimo lentelę.
+4. **GIS Sistemos Pagrindai:** Įveikta `react-leaflet`, plotų ir perimetrų geometrija su „Next.js API Proxy“ tuneliu (`/api/cadastre`) apeinančiu *Geoportal.lt* CORS blokus.
 
 ---
 
-## 🎯 Kito Etapo Užduotys (Nuo čia pradėsime)
+## 🎯 Kito Etapo Užduotys (Nuo čia pradėsime kitoje sesijoje)
 
-### 1. Duomenų Bazių (DB) Integracija ir Saugumas (Firebase)
-- Visi nupiešti poligonų (laukų) atvaizdavimai – vektorinės koordinatės ir išsami informacija (pavadinimas, kultūra, plotas) – privalo būti saugiai išsaugoti *Firestore* ar kitoje parinktoje DB.
-- Reikalinga sukurti patikimą sinchronizacijos logiką (GET atidarius aplikaciją, POST sukuriant, DELETE trinant).
+### 1. Funkcionalumų sujungimas (API integracija su nauju UI)
+- Šioje sesijoje sumontuotas įspūdingas „Dashboard“ šiuo metu naudoja itin daug kieto (dummy) kodo (pvz., pranešimai apie drėgmę, suplanuoti darbai, laukų ataskaitos, orai).
+- **Tikslas:** Pajungti (wire-up) naują UI vizualą prie realių Firestore kolekcijų.
+   - Vietoj įkoduotų orų, naudosime „meteo.lt“ ar išorinį API palaikymą.
+   - Aktyvių darbų lentelė ims informaciją realiu laiku iš `/dashboard/darbai` konteksto.
+   - Integruoti pilnai GIS laukus (polygon) į pagrindinio ekranio apžvalgą (Preview mini žemėlapis).
 
-### 2. „Multi-Tenant“ (Vartotojų Profilių) Architektūra
-- Šiuo metu aplikacija neturi stipraus naudotojų atskyrimo profilio lygmenyje. 
-- **Tikslas:** Sukurti logiką, kad kiekvienas prie sistemos prisijungęs vartotojas (Ūkininkas) iš DB gautų **TIK SAVO** suvestus laukus, sandėlio informaciją ir darbus.
-- Duomenų struktūra turi turėti `userId` pririšimą prie kiekvieno lauko ar darbo įrašo.
-
-### 3. Išsami vartotojo sąsajos (UI) Transformacija
-- Pritaikysime dizainą prie esminių DB pasikeitimų (pakrovimo indikatoriai, tušti DB „Empty States“).
-- Atnaujinsime modulių (Darbo, Sandėlio) dizainus, kad jie vientisai sutaptų su nauja, labai vizualia GIS navigacijos koncepcija.
+### 2. Vidinių modulių pritaikymas naujam moduliui (UI Matching)
+- Esami puslapiai (`Sandėlis`, `Darbuotojai/Užduotys`, `Laukai / Braižymas`) vizualiai pasiliko standartiniame lygyje. Reikia modifikuoti šiuos polapių UI, pritaikant prie apvalių rėmų ir permatomo prabangesnio dizaino.
 
 ---
-*Sesija išsaugota ir baigta sėkmingai.* Pailsėk, ir kai būsi pasiruošęs, tiesiog paskirk „Atidaryk SESSION_ROADMAP.md ir pradėkime kito etapo darbus“.*
+*Sesija išsaugota! Kai norėsite tęsti darbus, atidarykite šį failą (SESSION_ROADMAP.md) ir perskaitę būsime paruošti pradėti sujunginėti pilną sistemą!*
