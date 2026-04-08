@@ -5,7 +5,7 @@ import { onAuthStateChanged, User } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 
-export type Role = "farmer" | "worker";
+export type Role = "farmer" | "worker" | "company";
 
 export interface UserData {
   uid: string;
