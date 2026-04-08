@@ -15,6 +15,7 @@ import {
   serverTimestamp 
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import WeatherWidget from "@/components/WeatherWidget";
 
 // Dinamiškai krauname MapEditor (be Server-Side Rendering)
 const MapEditor = dynamic(() => import("@/components/MapEditor"), { 
@@ -176,6 +177,26 @@ export default function LaukaiPage() {
               <div className="h-48 bg-surface-container-lowest relative flex items-center justify-center overflow-hidden border-b border-surface-container-highest/50">
                 <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(var(--color-surface-container-high) 1px, transparent 1px)', backgroundSize: '16px 16px', opacity: 0.1 }}></div>
                 
+                {(() => {
+                   let lat = null;
+                   let lon = null;
+                   try {
+                     if (laukas.geoData?.features?.[0]?.geometry?.coordinates?.[0]?.[0]) {
+                       lon = laukas.geoData.features[0].geometry.coordinates[0][0][0];
+                       lat = laukas.geoData.features[0].geometry.coordinates[0][0][1];
+                     }
+                   } catch(e) {}
+                   
+                   if (lat && lon) {
+                      return (
+                        <div className="absolute top-4 right-4 z-20">
+                           <WeatherWidget lat={lat} lon={lon} compact={true} />
+                        </div>
+                      );
+                   }
+                   return null;
+                })()}
+
                 {laukas.geoData ? (
                   <div className="relative z-10 flex flex-col items-center">
                      <div className="p-4 bg-primary/10 rounded-full shadow-[0_4px_16px_rgba(51,69,13,0.1)] mb-3 text-primary animate-pulse">

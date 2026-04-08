@@ -17,11 +17,13 @@ import {
   increment
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import WeatherWidget from "@/components/WeatherWidget";
 
 interface Laukas {
   id: string;
   pavadinimas: string;
   plotas: number;
+  geoData?: any;
 }
 
 interface Darbuotojas {
@@ -55,6 +57,8 @@ interface Darbas {
   statusas: string;
   createdAt: any;
   sandelioSanaudos?: SandelioSanaudos;
+  lat?: number;
+  lon?: number;
 }
 
 function getCalendarDays(year: number, month: number) {
@@ -112,7 +116,16 @@ export default function DarbaiPage() {
     const fetchLaukai = async () => {
       const q = query(collection(db, "laukai"), where("ownerId", "==", user.uid));
       const snap = await getDocs(q);
-      const data = snap.docs.map(doc => ({ id: doc.id, pavadinimas: doc.data().pavadinimas, plotas: doc.data().plotas || 0 }));
+      const data = snap.docs.map(doc => {
+         const docData = doc.data();
+         let parsedGeoData = null;
+         if (docData.geoData) {
+            try {
+              parsedGeoData = typeof docData.geoData === "string" ? JSON.parse(docData.geoData) : docData.geoData;
+            } catch(e) {}
+         }
+         return { id: doc.id, pavadinimas: docData.pavadinimas, plotas: docData.plotas || 0, geoData: parsedGeoData };
+      });
       setLaukaiList(data);
     };
 
@@ -182,6 +195,13 @@ export default function DarbaiPage() {
         };
       }
 
+      let lat = null;
+      let lon = null;
+      if (pasirinktasLaukasObj?.geoData?.features?.[0]?.geometry?.coordinates?.[0]?.[0]) {
+         lon = pasirinktasLaukasObj.geoData.features[0].geometry.coordinates[0][0][0];
+         lat = pasirinktasLaukasObj.geoData.features[0].geometry.coordinates[0][0][1];
+      }
+
       await addDoc(collection(db, "darbai"), {
         farmerId: user.uid,
         pavadinimas: formPavadinimas,
@@ -192,7 +212,9 @@ export default function DarbaiPage() {
         data: formData,
         statusas: "Planuojama",
         createdAt: serverTimestamp(),
-        sandelioSanaudos: sanaudos
+        sandelioSanaudos: sanaudos,
+        lat: lat,
+        lon: lon
       });
       
       setFormPavadinimas("");
@@ -335,11 +357,17 @@ export default function DarbaiPage() {
                            <h3 className="text-xl font-bold text-ink mb-1">{darbas.pavadinimas}</h3>
                            
                            {darbas.sandelioSanaudos && (
-                              <p className="text-xs text-ink/40 font-mono mt-1">Numatoma išeiga: {darbas.sandelioSanaudos.kiekis} {darbas.sandelioSanaudos.vienetas} ({darbas.sandelioSanaudos.pavadinimas})</p>
+                              <p className="text-xs text-ink/40 font-mono mt-1 mb-3">Numatoma išeiga: {darbas.sandelioSanaudos.kiekis} {darbas.sandelioSanaudos.vienetas} ({darbas.sandelioSanaudos.pavadinimas})</p>
+                           )}
+
+                           {darbas.lat && darbas.lon && (
+                              <div className="mt-3 inline-block">
+                                 <WeatherWidget lat={darbas.lat} lon={darbas.lon} compact={true} />
+                              </div>
                            )}
                          </div>
                          
-                         <div className="flex flex-col sm:items-end gap-1 font-mono text-[0.875rem]">
+                         <div className="flex flex-col sm:items-end justify-between font-mono text-[0.875rem]">
                            <p className="text-ink/60">Laukas: <span className="text-ink font-bold">{darbas.laukoPavadinimas}</span></p>
                            <p className="text-ink/60">Vykdo: <span className="text-ink font-bold">{darbas.assignedWorkerEmail}</span></p>
                            

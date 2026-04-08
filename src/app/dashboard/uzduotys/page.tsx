@@ -15,6 +15,7 @@ import {
   serverTimestamp
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import WeatherWidget from "@/components/WeatherWidget";
 
 interface SandelioSanaudos {
   sandelisItemId: string;
@@ -32,6 +33,8 @@ interface Darbas {
   statusas: string;
   farmerId: string;
   sandelioSanaudos?: SandelioSanaudos;
+  lat?: number;
+  lon?: number;
 }
 
 export default function UzduotysPage() {
@@ -174,11 +177,16 @@ export default function UzduotysPage() {
                           </svg>
                           <span className="truncate">{uzduotis.laukoPavadinimas}</span>
                         </div>
-                        {uzduotis.sandelioSanaudos && (
-                           <div className="mt-2 text-[0.6875rem] text-primary/70 font-mono uppercase tracking-widest bg-primary/5 px-3 py-2 rounded-[16px] inline-block">
-                             + {uzduotis.sandelioSanaudos.kiekis} {uzduotis.sandelioSanaudos.vienetas} {uzduotis.sandelioSanaudos.pavadinimas}
-                           </div>
-                        )}
+                        <div className="flex flex-col items-start gap-2 mt-2">
+                           {uzduotis.sandelioSanaudos && (
+                              <div className="text-[0.6875rem] text-primary/70 font-mono uppercase tracking-widest bg-primary/5 px-3 py-2 rounded-[16px] inline-block">
+                                + {uzduotis.sandelioSanaudos.kiekis} {uzduotis.sandelioSanaudos.vienetas} {uzduotis.sandelioSanaudos.pavadinimas}
+                              </div>
+                           )}
+                           {uzduotis.lat && uzduotis.lon && (
+                              <WeatherWidget lat={uzduotis.lat} lon={uzduotis.lon} compact={true} />
+                           )}
+                        </div>
                       </div>
                       
                       <div className="mt-8 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">
