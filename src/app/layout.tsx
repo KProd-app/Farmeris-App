@@ -28,6 +28,14 @@ export default function RootLayout({
       lang="lt"
       className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
+      <head>
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+        <style dangerouslySetInnerHTML={{__html: `
+          .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+          }
+        `}} />
+      </head>
       <body className="min-h-full flex flex-col bg-surface text-ink font-sans">
         <AuthProvider>{children}</AuthProvider>
       </body>
