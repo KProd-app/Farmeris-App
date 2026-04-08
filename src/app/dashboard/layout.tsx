@@ -8,49 +8,6 @@ import { auth } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
-// Paprastos SVG ikonos
-const HomeIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-  </svg>
-);
-
-const FieldsIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-  </svg>
-);
-
-const TasksIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-  </svg>
-);
-
-const InventoryIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-  </svg>
-);
-
-const FinanceIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-  </svg>
-);
-
-const WorkersIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-  </svg>
-);
-
-const LogoutIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-  </svg>
-);
-
 const MenuIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -62,21 +19,31 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Solo Farmer Links added here
+  // Link Definitions
   const farmerLinks = [
-    { name: "Apžvalga", href: "/dashboard", icon: HomeIcon },
-    { name: "Mano Laukai", href: "/dashboard/laukai", icon: FieldsIcon },
-    { name: "Kalendorius", href: "/dashboard/darbai", icon: TasksIcon },
-    { name: "Sandėlys", href: "/dashboard/sandelis", icon: InventoryIcon },
-    { name: "Finansai", href: "/dashboard/finansai", icon: FinanceIcon },
+    { name: "Apžvalga", href: "/dashboard", icon: "dashboard" },
+    { name: "Mano Laukai", href: "/dashboard/laukai", icon: "map" },
+    { name: "Kalendorius", href: "/dashboard/darbai", icon: "assignment" },
+    { name: "Sandėlys", href: "/dashboard/sandelis", icon: "inventory_2" },
+    { name: "Finansai", href: "/dashboard/finansai", icon: "account_balance" },
   ];
 
   const workerLinks = [
-    { name: "Apžvalga", href: "/dashboard", icon: HomeIcon },
-    { name: "Mano Užduotys", href: "/dashboard/uzduotys", icon: TasksIcon },
+    { name: "Apžvalga", href: "/dashboard", icon: "dashboard" },
+    { name: "Mano Užduotys", href: "/dashboard/uzduotys", icon: "assignment" },
+  ];
+  
+  const companyLinks = [
+    { name: "Apžvalga", href: "/dashboard", icon: "dashboard" },
+    { name: "Visi Laukai", href: "/dashboard/laukai", icon: "map" },
+    { name: "Personalas", href: "/dashboard/personalas", icon: "groups" },
+    { name: "Technika", href: "/dashboard/technika", icon: "agriculture" },
+    { name: "Analitika", href: "/dashboard/analitika", icon: "finance" },
   ];
 
-  const links = userData?.role === "farmer" ? farmerLinks : workerLinks;
+  let links = farmerLinks;
+  if(userData?.role === "worker") links = workerLinks;
+  else if(userData?.role === "company") links = companyLinks;
 
   const handleLogout = async () => {
     try {
@@ -85,108 +52,142 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       console.error("Klaida atsijungiant:", error);
     }
   };
+  
+  // Format user name initials / display
+  const userDisplayName = userData?.firstName 
+    ? `${userData.firstName} ${userData.lastName ? userData.lastName[0] + '.' : ''}`
+    : userData?.email?.split('@')[0] || "Vartotojas";
+    
+  const roleDisplay = userData?.role === "farmer" ? "Ūkininkas" 
+                    : userData?.role === "company" ? "Bendrovė"
+                    : "Darbuotojas";
 
   return (
     <ProtectedRoute>
-      <div className="flex h-screen bg-surface overflow-hidden font-sans">
-        {/* Mobiliojo ekrano užtemdymas - Glassmorphism fallback */}
+      <div className="flex h-screen bg-surface overflow-hidden font-sans text-on-surface">
+        
+        {/* Mobile Menu Backdrop */}
         {mobileMenuOpen && (
           <div 
-            className="fixed inset-0 z-20 bg-surface-container-highest/70 backdrop-blur-md transition-opacity lg:hidden"
+            className="fixed inset-0 z-40 bg-surface-container-highest/70 backdrop-blur-md transition-opacity lg:hidden"
             onClick={() => setMobileMenuOpen(false)}
           />
         )}
 
-        {/* Šoninis Meniu (Sidebar) - The Digital Agronomist aesthetic */}
-        <div className={`fixed inset-y-0 left-0 z-30 w-72 bg-surface-container-lowest shadow-[4px_0_40px_rgba(26,28,25,0.03)] transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-auto flex flex-col ${customMobileSlide(mobileMenuOpen)}`}>
+        {/* Sidebar Navigation */}
+        <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-surface-container-low flex flex-col py-8 shadow-[4px_0_40px_rgba(26,28,25,0.03)] transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static flex-shrink-0 ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"}`}>
           
-          {/* Logo / Pavadinimas */}
-          <div className="flex items-center justify-center py-10 px-4">
-            <div className="flex items-center gap-3">
-              <div className="bg-primary/10 p-3 rounded-[16px]">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                </svg>
-              </div>
-              <span className="text-2xl font-bold tracking-tight text-ink">
-                Farmeris
-              </span>
+          <div className="px-8 mb-8 flex justify-between items-center cursor-pointer">
+            <div>
+              <h1 className="font-sans font-black text-primary text-2xl tracking-tighter">Ūkio Draugas</h1>
+              <p className="font-mono text-[10px] uppercase tracking-widest text-on-surface-variant opacity-60 font-bold">Skaitmeninis Agronomas</p>
             </div>
+            {/* Close button for mobile */}
+            <button className="lg:hidden text-ink/60 hover:bg-surface-container-highest p-1 rounded-full transition-all" onClick={() => setMobileMenuOpen(false)}>
+               <span className="material-symbols-outlined">close</span>
+            </button>
           </div>
 
-          {/* Navigacijos Nuorodos (Erdvios, apvalios formos) */}
-          <nav className="flex-1 px-6 py-2 text-[0.9375rem] text-ink font-medium space-y-2 overflow-y-auto">
+          <nav className="flex-1 space-y-1 mt-4 overflow-y-auto w-full">
             {links.map((link) => {
               const isActive = pathname === link.href;
               return (
-                <Link 
-                  key={link.name} 
+                <Link
+                  key={link.name}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center gap-4 px-5 py-3.5 rounded-[20px] transition-all group ${
+                  className={`flex items-center px-8 py-3.5 transition-all duration-300 group rounded-r-full ${
                     isActive 
-                      ? "bg-surface-container-highest shadow-[0_4px_16px_rgba(26,28,25,0.04)] text-ink" 
-                      : "text-ink/60 hover:text-ink hover:bg-surface"
+                      ? "text-primary font-bold bg-surface-container-highest/60 shadow-sm" 
+                      : "text-on-surface-variant/80 font-medium hover:translate-x-2"
                   }`}
                 >
-                  <div className={`${isActive ? "text-primary" : "text-ink/40 group-hover:text-primary/70"}`}>
-                    <link.icon />
-                  </div>
-                  {link.name}
+                  <span className={`material-symbols-outlined mr-4 transition-all ${isActive ? "text-primary" : "text-on-surface-variant/60 group-hover:text-primary"}`} style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}>
+                    {link.icon}
+                  </span>
+                  <span className="font-mono text-[13px] tracking-tight">{link.name}</span>
                 </Link>
               );
             })}
           </nav>
 
-          {/* Vartotojo Profilis ir Atsijungimas */}
-          <div className="p-6 mt-auto">
-            <div className="bg-surface p-4 rounded-[24px] flex flex-col gap-4 shadow-[0_4px_16px_rgba(26,28,25,0.02)]">
-               <div className="flex flex-col">
-                  <span className="text-sm font-semibold text-ink truncate font-mono">
-                    {user?.email}
-                  </span>
-                  <span className="text-[0.6875rem] font-bold tracking-widest uppercase text-primary bg-primary/10 px-2.5 py-1.5 rounded-full self-start mt-2 font-sans">
-                    {userData?.role === "farmer" ? "Ūkininkas" : "Pagalbininkas"}
-                  </span>
-               </div>
-               <button 
-                  onClick={handleLogout}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm text-secondary hover:bg-secondary/10 rounded-[16px] transition-colors font-medium border border-transparent"
-               >
-                 <LogoutIcon />
-                 Atsijungti
-               </button>
-            </div>
+          <div className="px-6 pt-4 mt-auto">
+            {/* Action button */}
+            <button className="w-full py-3.5 bg-primary text-on-primary rounded-[16px] font-bold text-sm flex items-center justify-center gap-2 mb-8 shadow-[0_4px_16px_rgba(51,69,13,0.3)] hover:opacity-90 active:scale-95 transition-all">
+              <span className="material-symbols-outlined text-base">add</span>
+              Naujas Įrašas
+            </button>
           </div>
-        </div>
 
-        {/* Pagrindinis turinys */}
-        <div className="flex-1 flex flex-col overflow-hidden bg-surface relative">
+          <div className="px-8 pt-6 border-t border-outline-variant/20 flex flex-col gap-4">
+               <a className="flex items-center text-on-surface-variant opacity-70 text-xs font-semibold hover:opacity-100 transition-opacity cursor-pointer">
+                  <span className="material-symbols-outlined text-sm mr-3">help</span>
+                  Pagalba
+               </a>
+               <button onClick={handleLogout} className="flex items-center text-error border-transparent opacity-80 hover:opacity-100 font-semibold cursor-pointer text-xs w-full text-left transition-opacity">
+                  <span className="material-symbols-outlined text-[15px] mr-3">logout</span>
+                  Atsijungti
+               </button>
+          </div>
+        </aside>
+
+        {/* Main Content Area */}
+        <main className="flex-1 flex flex-col overflow-hidden relative">
           
-          {/* Mobili antraštė */}
-          <header className="flex items-center justify-between h-20 px-6 bg-surface-container-highest/50 backdrop-blur-md lg:hidden absolute top-0 left-0 right-0 z-10">
+          {/* Top Bar */}
+          <header className="w-full sticky top-0 z-30 bg-surface/80 backdrop-blur-2xl flex justify-between items-center px-6 md:px-8 py-4 border-b border-surface-container-highest/20 shadow-[0_4px_24px_rgba(26,28,25,0.02)]">
+            
+            {/* Mobile Menu Button */}
             <button 
               onClick={() => setMobileMenuOpen(true)}
-              className="text-ink/60 focus:outline-none p-2 -ml-2 bg-white rounded-full shadow-sm"
+              className="lg:hidden text-on-surface-variant focus:outline-none p-2 -ml-2 mr-4 bg-surface-container-low rounded-full shadow-sm active:scale-90 transition-transform flex-shrink-0"
             >
               <MenuIcon />
             </button>
-            <span className="text-lg font-bold text-ink tracking-tight">Farmeris</span>
-            <div className="w-10"></div>
+
+            {/* Global Search Bar */}
+            <div className="flex items-center gap-4 flex-1">
+              <div className="relative w-full max-w-md hidden sm:block">
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-[20px]">search</span>
+                <input 
+                  className="w-full bg-surface-container border border-transparent rounded-[16px] py-2.5 pl-12 pr-4 text-sm focus:ring-2 focus:ring-primary/20 focus:bg-white placeholder:text-on-surface-variant/50 transition-all outline-none font-medium shadow-inner" 
+                  placeholder="Ieškoti laukų, užduočių, inventoriaus..." 
+                  type="text"
+                />
+              </div>
+            </div>
+
+            {/* Profile & Notifications */}
+            <div className="flex items-center gap-3 sm:gap-5 flex-shrink-0">
+              <div className="flex items-center gap-1 sm:gap-2">
+                <button className="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors active:scale-95" title="Pranešimai">
+                  <span className="material-symbols-outlined text-[20px]">notifications</span>
+                </button>
+                <button className="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors active:scale-95 hidden sm:block" title="Nustatymai">
+                  <span className="material-symbols-outlined text-[20px]">settings</span>
+                </button>
+              </div>
+              
+              <div className="flex items-center gap-3 pl-3 sm:pl-5 sm:border-l border-outline-variant/30">
+                <div className="text-right hidden sm:block">
+                  <p className="text-[13px] font-bold text-primary tracking-tight leading-tight mb-0.5">{userDisplayName}</p>
+                  <p className="text-[9px] text-on-surface-variant font-mono uppercase tracking-widest leading-none font-semibold opacity-70">{roleDisplay}</p>
+                </div>
+                {/* Fallback avatar generator utilizing initials if needed */}
+                <div className="flex-shrink-0 w-10 h-10 rounded-[12px] bg-primary-container text-on-primary-container flex justify-center items-center font-bold border border-primary/10 shadow-sm cursor-pointer hover:opacity-90 active:scale-95 transition-all text-sm font-mono">
+                   {userData?.firstName ? userData.firstName[0].toUpperCase() : (user?.email?.[0].toUpperCase() || "A")}
+                </div>
+              </div>
+            </div>
           </header>
 
-          <main className="flex-1 overflow-x-hidden overflow-y-auto pt-24 lg:pt-8 p-4 md:p-8 lg:p-12">
-            <div className="w-full max-w-6xl mx-auto">
-              {children}
-            </div>
-          </main>
-        </div>
+          {/* Sub-view rendering canvas */}
+          <div className="flex-1 overflow-x-hidden overflow-y-auto">
+             {children}
+          </div>
+          
+        </main>
       </div>
     </ProtectedRoute>
   );
-}
-
-// Pagalbinė funkcija mobiliojo meniu atvaizdavimui
-function customMobileSlide(isOpen: boolean) {
-  return isOpen ? "translate-x-0" : "-translate-x-full";
 }
