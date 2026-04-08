@@ -11,6 +11,8 @@ export interface UserData {
   uid: string;
   email: string;
   role: Role;
+  firstName?: string;
+  lastName?: string;
 }
 
 interface AuthContextType {

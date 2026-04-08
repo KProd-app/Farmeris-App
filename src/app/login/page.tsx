@@ -18,15 +18,16 @@ function LoginForm() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [role, setRole] = useState<Role>((roleParam as Role) || "farmer"); 
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // Jei atvyko iš "Landing" su konkrečia role (pvz. url?role=farmer), 
-    // iškart rodome registracijos režimą ir pritaikome rolę.
+    // išsaugome rolę ateičiai (sukurti paskyrai), bet neperjungiame į registraciją automatiškai - prioritetas Prisijungimas.
     if (roleParam) {
-      setIsLogin(false);
       setRole(roleParam as Role);
     }
   }, [roleParam]);
@@ -44,11 +45,13 @@ function LoginForm() {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         
-        // Saugome papildomus vartotojo duomenis Firestore
+        // Saugome papildomus vartotojo duomenis Firestore (taip pat įtraukiame Vardą ir Pavardę)
         await setDoc(doc(db, "users", user.uid), {
           uid: user.uid,
           email: user.email,
           role: role,
+          firstName: firstName,
+          lastName: lastName,
         });
         
         router.push("/dashboard");
@@ -110,8 +113,36 @@ function LoginForm() {
             className="bg-surface-container-lowest p-6 sm:p-10 rounded-[32px] shadow-[0_12px_40px_rgba(26,28,25,0.04)] border border-surface-container-highest/30 space-y-6"
           >
             <div className="space-y-4">
+              
+              {!isLogin && (
+                <div className="grid grid-cols-2 gap-4 animate-fade-in-up">
+                  <div className="group">
+                    <label className="block text-[11px] font-bold tracking-widest uppercase text-ink/50 mb-2 ml-1">Vardas</label>
+                    <input 
+                      required
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      type="text"
+                      className="w-full h-14 px-5 bg-surface-container border-none rounded-xl focus:ring-2 focus:ring-primary/30 focus:bg-white transition-all outline-none text-ink placeholder-ink/30 shadow-inner" 
+                      placeholder="Jonas" 
+                    />
+                  </div>
+                  <div className="group">
+                    <label className="block text-[11px] font-bold tracking-widest uppercase text-ink/50 mb-2 ml-1">Pavardė</label>
+                    <input 
+                      required
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      type="text"
+                      className="w-full h-14 px-5 bg-surface-container border-none rounded-xl focus:ring-2 focus:ring-primary/30 focus:bg-white transition-all outline-none text-ink placeholder-ink/30 shadow-inner" 
+                      placeholder="Jonaitis" 
+                    />
+                  </div>
+                </div>
+              )}
+
               <div className="group">
-                <label className="block text-[11px] font-bold tracking-widest uppercase text-ink/50 mb-2 ml-1">Paštas</label>
+                <label className="block text-[11px] font-bold tracking-widest uppercase text-ink/50 mb-2 ml-1">El. Paštas</label>
                 <div className="relative">
                   <input 
                     required
