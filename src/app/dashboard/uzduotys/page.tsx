@@ -9,9 +9,20 @@ import {
   where, 
   onSnapshot, 
   updateDoc, 
-  doc 
+  doc,
+  writeBatch,
+  increment,
+  serverTimestamp
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+
+interface SandelioSanaudos {
+  sandelisItemId: string;
+  pavadinimas: string;
+  kiekis: number;
+  vienetas: string;
+  vienetoKaina: number;
+}
 
 interface Darbas {
   id: string;
@@ -20,6 +31,7 @@ interface Darbas {
   data: string;
   statusas: string;
   farmerId: string;
+  sandelioSanaudos?: SandelioSanaudos;
 }
 
 export default function UzduotysPage() {
@@ -69,12 +81,40 @@ export default function UzduotysPage() {
   }, [user]);
 
   // Funkcija užbaigti užduotį
-  const handleCompleteTask = async (taskId: string) => {
+  const handleCompleteTask = async (task: Darbas) => {
+    if (!user) return;
     if(confirm("Ar tikrai norite pažymėti šią užduotį kaip atliktą?")) {
       try {
-        await updateDoc(doc(db, "darbai", taskId), {
-          statusas: "Atlikta"
-        });
+        const batch = writeBatch(db);
+        
+        // 1. Update task status
+        const taskRef = doc(db, "darbai", task.id);
+        batch.update(taskRef, { statusas: "Atlikta" });
+
+        // 2. Perform Sandėlis deduction and Finansai log if applicable
+        if (task.sandelioSanaudos) {
+           const sanaudos = task.sandelioSanaudos;
+           
+           // Deduct inventory
+           const sandelisRef = doc(db, "sandelis", sanaudos.sandelisItemId);
+           batch.update(sandelisRef, { kiekis: increment(-sanaudos.kiekis) });
+           
+           // Log to finansai (owned by the farmer)
+           if (sanaudos.vienetoKaina > 0) {
+              const finansaiRef = doc(collection(db, "finansai"));
+              batch.set(finansaiRef, {
+                ownerId: task.farmerId, // Svarbu: išlaidos priklauso ūkininkui!
+                pavadinimas: `Sunaudotos medžiagos: ${task.pavadinimas} (${sanaudos.pavadinimas})`,
+                tipas: "Išlaidos",
+                kategorija: "Sėklos/Trąšos",
+                suma: Number((sanaudos.kiekis * sanaudos.vienetoKaina).toFixed(2)),
+                data: new Date().toISOString().split('T')[0],
+                createdAt: serverTimestamp()
+              });
+           }
+        }
+
+        await batch.commit();
       } catch (error) {
         console.error("Klaida atnaujinant užduoties statusą:", error);
         alert("Įvyko klaida.");
@@ -134,11 +174,16 @@ export default function UzduotysPage() {
                           </svg>
                           <span className="truncate">{uzduotis.laukoPavadinimas}</span>
                         </div>
+                        {uzduotis.sandelioSanaudos && (
+                           <div className="mt-2 text-[0.6875rem] text-primary/70 font-mono uppercase tracking-widest bg-primary/5 px-3 py-2 rounded-[16px] inline-block">
+                             + {uzduotis.sandelioSanaudos.kiekis} {uzduotis.sandelioSanaudos.vienetas} {uzduotis.sandelioSanaudos.pavadinimas}
+                           </div>
+                        )}
                       </div>
                       
                       <div className="mt-8 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
-                          onClick={() => handleCompleteTask(uzduotis.id)}
+                          onClick={() => handleCompleteTask(uzduotis)}
                           className="w-full inline-flex justify-center items-center rounded-[32px] bg-primary px-4 py-3.5 text-sm font-semibold text-on-primary shadow-[0_12px_40px_rgba(51,69,13,0.3)] hover:opacity-90 transition-all font-sans"
                         >
                           <svg className="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

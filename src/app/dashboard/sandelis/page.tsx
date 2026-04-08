@@ -22,6 +22,7 @@ interface SandelisItem {
   kategorija: string;
   kiekis: number;
   vienetas: string;
+  vienetoKaina?: number; // ADDED PRICE PER UNIT
 }
 
 export default function SandelisPage() {
@@ -40,9 +41,10 @@ export default function SandelisPage() {
   const [formKategorija, setFormKategorija] = useState("Sėklos");
   const [formKiekis, setFormKiekis] = useState("");
   const [formVienetas, setFormVienetas] = useState("kg");
+  const [formVienetoKaina, setFormVienetoKaina] = useState(""); // ADDED STATE
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const kategorijos = ["Sėklos", "Trąšos", "Degalai", "Technika", "Kita"];
+  const kategorijos = ["Sėklos", "Trąšos", "Degalai", "Chemija", "Kita"]; // Added Chemija
   const vienetai = ["kg", "t", "L", "vnt", "pakuotės"];
 
   useEffect(() => {
@@ -57,8 +59,8 @@ export default function SandelisPage() {
     const q = query(collection(db, "sandelis"), where("ownerId", "==", user.uid));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const dbItems: SandelisItem[] = [];
-      querySnapshot.forEach((doc) => {
-        dbItems.push({ id: doc.id, ...doc.data() } as SandelisItem);
+      querySnapshot.forEach((docSnap) => {
+        dbItems.push({ id: docSnap.id, ...docSnap.data() } as SandelisItem);
       });
       // Sort alphabetically
       dbItems.sort((a, b) => a.pavadinimas.localeCompare(b.pavadinimas));
@@ -76,6 +78,7 @@ export default function SandelisPage() {
     setFormKategorija("Sėklos");
     setFormKiekis("");
     setFormVienetas("kg");
+    setFormVienetoKaina("");
     setIsModalOpen(true);
   };
 
@@ -86,6 +89,7 @@ export default function SandelisPage() {
     setFormKategorija(item.kategorija);
     setFormKiekis(item.kiekis.toString());
     setFormVienetas(item.vienetas);
+    setFormVienetoKaina(item.vienetoKaina?.toString() || "");
     setIsModalOpen(true);
   };
 
@@ -108,6 +112,7 @@ export default function SandelisPage() {
           kategorija: formKategorija,
           kiekis: Number(formKiekis),
           vienetas: formVienetas,
+          vienetoKaina: formVienetoKaina ? Number(formVienetoKaina) : 0,
           updatedAt: serverTimestamp()
         });
       } else {
@@ -118,6 +123,7 @@ export default function SandelisPage() {
           kategorija: formKategorija,
           kiekis: Number(formKiekis),
           vienetas: formVienetas,
+          vienetoKaina: formVienetoKaina ? Number(formVienetoKaina) : 0,
           createdAt: serverTimestamp()
         });
       }
@@ -141,7 +147,10 @@ export default function SandelisPage() {
     }
   };
 
-  // Sugrupuojame items pagal kategoriją atvaizdavimui
+  const formatCurrency = (val: number) => {
+    return new Intl.NumberFormat('lt-LT', { style: 'currency', currency: 'EUR' }).format(val);
+  };
+
   const groupedItems = items.reduce((acc, item) => {
     acc[item.kategorija] = acc[item.kategorija] || [];
     acc[item.kategorija].push(item);
@@ -149,17 +158,16 @@ export default function SandelisPage() {
   }, {} as Record<string, SandelisItem[]>);
 
   if (!userData || userData.role !== "farmer") {
-      return <div className="p-8 text-ink font-mono text-sm opacity-50">Autentifikuojama seansą...</div>;
+      return <div className="p-8 text-ink font-mono text-sm opacity-50">Autentifikuojama...</div>;
   }
 
   return (
     <div className="space-y-12 animate-fade-in-up pb-20">
       
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pt-4">
         <div>
           <h1 className="text-[3.5rem] leading-none font-bold text-ink tracking-tight">Sandėlys</h1>
-          <p className="mt-4 text-lg text-ink/60 font-sans max-w-lg">Visi jūsų sėklų, trąšų ir degalų likučiai vienoje vietoje.</p>
+          <p className="mt-4 text-lg text-ink/60 font-sans max-w-lg">Visi sėklų, trąšų ir degalų likučiai bei jų finansinė vertė vienoje vietoje.</p>
         </div>
 
         <div className="flex items-center gap-3">
@@ -194,15 +202,26 @@ export default function SandelisPage() {
                   {katItems.map((item) => (
                     <div key={item.id} className="bg-surface p-6 rounded-[24px] shadow-[0_12px_40px_rgba(26,28,25,0.02)] flex flex-col justify-between transition-all hover:-translate-y-1 relative group">
                       <div>
-                        {/* Kiekis stambiu JetBrains Mono šriftu */}
-                        <div className="flex items-baseline gap-1 mb-2">
-                           <span className="text-3xl font-bold font-mono text-primary">{item.kiekis}</span>
-                           <span className="text-sm font-mono text-ink/50 uppercase tracking-wider">{item.vienetas}</span>
+                        <div className="flex items-baseline justify-between mb-2">
+                           <div className="flex items-baseline gap-1">
+                             <span className="text-3xl font-bold font-mono text-primary">{item.kiekis !== undefined ? item.kiekis.toFixed(2) : 0}</span>
+                             <span className="text-sm font-mono text-ink/50 uppercase tracking-wider">{item.vienetas}</span>
+                           </div>
+                           {item.vienetoKaina && item.vienetoKaina > 0 ? (
+                             <span className="text-xs font-mono font-semibold text-ink/40 bg-surface-container-low px-2 py-1 rounded">
+                               {formatCurrency(item.vienetoKaina)} / {item.vienetas}
+                             </span>
+                           ) : null}
                         </div>
                         <h3 className="text-lg font-semibold text-ink font-sans">{item.pavadinimas}</h3>
+                        
+                        {item.vienetoKaina && item.vienetoKaina > 0 ? (
+                          <p className="text-[0.6875rem] font-mono text-ink/50 uppercase mt-2">Viso turto vertė: {formatCurrency(item.kiekis * item.vienetoKaina)}</p>
+                        ) : (
+                          <p className="text-[0.6875rem] font-mono text-ink/30 uppercase mt-2">Kaina nenurodyta</p>
+                        )}
                       </div>
                       
-                      {/* Veiksmai pasirodo užvedus pelę (Hover effect) arbada visad matomi ant mobilių */}
                       <div className="mt-6 flex justify-end gap-2 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">
                         <button 
                            onClick={() => openEditModal(item)}
@@ -226,7 +245,6 @@ export default function SandelisPage() {
         </div>
       )}
 
-      {/* Glassmorphism Modalas pridėjimui/koregavimui */}
       {isModalOpen && (
         <div className="relative z-50">
           <div className="fixed inset-0 bg-surface-container-highest/70 backdrop-blur-[24px] transition-opacity" onClick={() => setIsModalOpen(false)}></div>
@@ -247,15 +265,6 @@ export default function SandelisPage() {
                         <input type="text" required value={formPavadinimas} onChange={(e) => setFormPavadinimas(e.target.value)} className="block w-full rounded-[24px] bg-surface-container-highest border-0 py-4 px-5 text-ink focus:ring-0 focus:bg-surface-container-lowest focus:shadow-[inset_0_0_0_1px_rgba(51,69,13,0.2)] transition-all font-sans" placeholder="Pv. Karbamidas, Žieminiai kviečiai 'Skagen'" />
                       </div>
 
-                      <div>
-                        <label className="block text-xs font-medium uppercase tracking-widest text-ink/50 font-mono mb-2">Kategorija</label>
-                        <select required value={formKategorija} onChange={(e) => setFormKategorija(e.target.value)} className="block w-full rounded-[24px] bg-surface-container-highest border-0 py-4 px-5 text-ink focus:ring-0 focus:bg-surface-container-lowest focus:shadow-[inset_0_0_0_1px_rgba(51,69,13,0.2)] transition-all font-sans appearance-none">
-                          {kategorijos.map((kat) => (
-                             <option key={kat} value={kat}>{kat}</option>
-                          ))}
-                        </select>
-                      </div>
-                      
                       <div className="grid grid-cols-2 gap-6">
                         <div>
                           <label className="block text-xs font-medium uppercase tracking-widest text-ink/50 font-mono mb-2">Turimas Kiekis</label>
@@ -271,6 +280,23 @@ export default function SandelisPage() {
                           </select>
                         </div>
                       </div>
+
+                      <div className="grid grid-cols-2 gap-6">
+                        <div>
+                          <label className="block text-xs font-medium uppercase tracking-widest text-ink/50 font-mono mb-2">Kategorija</label>
+                          <select required value={formKategorija} onChange={(e) => setFormKategorija(e.target.value)} className="block w-full rounded-[24px] bg-surface-container-highest border-0 py-4 px-5 text-ink focus:ring-0 focus:bg-surface-container-lowest focus:shadow-[inset_0_0_0_1px_rgba(51,69,13,0.2)] transition-all font-sans appearance-none">
+                            {kategorijos.map((kat) => (
+                               <option key={kat} value={kat}>{kat}</option>
+                            ))}
+                          </select>
+                        </div>
+                        
+                        <div>
+                          <label className="block text-xs font-medium uppercase tracking-widest text-ink/50 font-mono mb-2">Vieneto Kaina (€) (Neprivaloma)</label>
+                          <input type="number" step="0.01" value={formVienetoKaina} onChange={(e) => setFormVienetoKaina(e.target.value)} className="block w-full rounded-[24px] bg-surface-container-highest border-0 py-4 px-5 text-ink font-mono focus:ring-0 focus:bg-surface-container-lowest focus:shadow-[inset_0_0_0_1px_rgba(51,69,13,0.2)] transition-all" placeholder="Pvz. 50" />
+                        </div>
+                      </div>
+
                     </div>
                   </div>
                   
